@@ -1,10 +1,6 @@
 # Ignore build files
 cmake-build-*/
 
-# Ignore CLion specific files
-.idea/
-*.iml
-
 # Ignore OS generated files
 .DS_Store
 Thumbs.db
