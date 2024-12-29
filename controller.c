@@ -130,11 +130,21 @@ void Controller_update(Controller* self)
         Model_calculate_player_state(self->game->model, i);
     }
 
+    Wall wall;
+    int distance;
     for (int i = 0; i < self->game->model->num_players; i++)
     {
         Player* player = Controller_get_player(self, i);
         if (player->state == PLAYER_STATE_TO_DEATH)
+        {
             player->state = PLAYER_STATE_DEAD;
+            Direction opposite = Model_get_opposite_direction(player->direction);
+            Direction current = player->direction;
+            int dx, dy;
+            Model_get_relative_direction(opposite, &dx, &dy);
+            if (Model_try_hit_raycast(self->game->model, player->x + dx, player->y + dy, opposite, &wall, &distance))
+                Model_add_wall(self->game->model, player->x, player->y, current, distance, i);
+        }
         else if (player->state == PLAYER_STATE_ALIVE)
             player->score++;
     }

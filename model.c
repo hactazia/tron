@@ -155,26 +155,38 @@ bool Model_out_of_bounds(const Model* model, const int x, const int y)
     return x < 0 || x >= model->width || y < 0 || y >= model->height;
 }
 
-bool Model_try_hit_raycast(const Model* model, const int x, const int y, const int direction, Wall* output,
-                           int* distance)
+void Model_get_relative_direction(Direction direction, int* dx, int* dy)
 {
-    int dx = 0;
-    int dy = 0;
     switch (direction)
     {
     case DIRECTION_UP:
-        dy = -1;
+        *dx = 0;
+        *dy = -1;
         break;
     case DIRECTION_DOWN:
-        dy = 1;
+        *dx = 0;
+        *dy = 1;
         break;
     case DIRECTION_LEFT:
-        dx = -1;
+        *dx = -1;
+        *dy = 0;
         break;
     case DIRECTION_RIGHT:
-        dx = 1;
+        *dx = 1;
+        *dy = 0;
         break;
     }
+
+    dx = 0;
+    dy = 0;
+}
+
+bool Model_try_hit_raycast(const Model* model, const int x, const int y, const int direction, Wall* output,
+                           int* distance)
+{
+    int dx, dy;
+    Model_get_relative_direction(direction, &dx, &dy);
+
     int cx = x;
     int cy = y;
 
@@ -378,8 +390,9 @@ void Model_calculate_player_state(Model* self, const int index)
     for (int i = 0; i < self->num_players; i++)
     {
         if (i == index) continue;
-        Model_get_player_wall(self, i, &wall, &distance);
         const Player other = self->players[i];
+        if (other.state != PLAYER_STATE_ALIVE) continue;
+        Model_get_player_wall(self, i, &wall, &distance);
         wall.direction = Model_get_opposite_direction(other.direction);
         wall.length = distance;
         if (distance > 0 && Model_hit_wall(&wall, player->x, player->y))

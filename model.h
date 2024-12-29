@@ -230,4 +230,12 @@ void Model_remove_player(Model *self, const int index);
  */
 void Model_reset(Model *self);
 
+/**
+ * @brief Get the relative direction
+ * @param direction The direction
+ * @param dx The output x
+ * @param dy The output y
+ */
+void Model_get_relative_direction(Direction direction, int *dx, int *dy);
+
 #endif // MODEL_H
