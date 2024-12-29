@@ -1,5 +1,7 @@
 # Tron Game
 
+> Repository: [hactazia/tron](https://github.com/hactazia/tron)
+
 ## Description
 
 Tron is a simple game implemented in C. The game can be run using either SDL or ncurses for rendering.
@@ -19,6 +21,7 @@ To build the game, follow the steps below:
     - For SDL:
         ```sh
         sudo apt-get install libsdl2-2.0-0 libsdl2-dev
+        sudo apt-get install libsdl2-ttf-2.0-0 libsdl2-ttf-dev
         ```
     - For ncurses:
         ```sh

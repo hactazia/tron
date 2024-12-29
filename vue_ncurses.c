@@ -9,7 +9,7 @@
 #include "utils.h"
 #include "tron.h"
 
-void VueNCURSES_draw_border(NCURSESData* data)
+void VueNCURSES_draw_border(NCURSESData *data)
 {
     // render the game preview
     wclear(data->win);
@@ -27,7 +27,7 @@ void VueNCURSES_draw_border(NCURSESData* data)
     wrefresh(data->msg);
 }
 
-void VueNCURSES_init(NCURSESData* data)
+void VueNCURSES_init(NCURSESData *data)
 {
     // a window for the game preview
     // a window for the scoreboards
@@ -68,7 +68,7 @@ int VueNCURSES_number_length(int number)
     return length;
 }
 
-void VueNCURSES_draw_window(NCURSESData* data)
+void VueNCURSES_draw_window(NCURSESData *data)
 {
     // modify the message window
     box(data->msg, 0, 0);
@@ -81,7 +81,7 @@ void VueNCURSES_draw_window(NCURSESData* data)
 
     // modify the scoreboard window
     box(data->scoreboard, 0, 0);
-    const char* scoreboard_text = "Scoreboard";
+    const char *scoreboard_text = "Scoreboard";
     mvwprintw(data->scoreboard, 1, (getmaxx(data->scoreboard) - strlen(scoreboard_text)) / 2, scoreboard_text);
 
     // sort players by score
@@ -89,7 +89,7 @@ void VueNCURSES_draw_window(NCURSESData* data)
     int scoreboard[player_count][2];
     for (int i = 0; i < player_count; i++)
     {
-        const Player* player = Controller_get_player(data->self->game->controller, i);
+        const Player *player = Controller_get_player(data->self->game->controller, i);
         scoreboard[i][0] = i;
         scoreboard[i][1] = player->score;
     }
@@ -98,22 +98,20 @@ void VueNCURSES_draw_window(NCURSESData* data)
     // show top players
     for (int i = 0; i < player_count; i++)
     {
-        Player* player = Controller_get_player(data->self->game->controller, scoreboard[i][0]);
+        Player *player = Controller_get_player(data->self->game->controller, scoreboard[i][0]);
         mvwprintw(
             data->scoreboard,
             i + 3,
             2,
             "Player %d %s",
-            scoreboard[i][0],
-            player->state == PLAYER_STATE_ALIVE ? "    " : "Dead"
-        );
+            scoreboard[i][0] + 1,
+            player->state == PLAYER_STATE_ALIVE ? "    " : "Dead");
         mvwprintw(
             data->scoreboard,
             i + 3,
             getmaxx(data->scoreboard) - VueNCURSES_number_length(scoreboard[i][1]) - 2,
             "%d",
-            scoreboard[i][1]
-        );
+            scoreboard[i][1]);
     }
     wrefresh(data->scoreboard);
 
@@ -128,33 +126,34 @@ void VueNCURSES_draw_window(NCURSESData* data)
     const int wall_count = Controller_get_wall_count(data->self->game->controller);
     for (int i = 0; i < wall_count; i++)
     {
-        const Wall* wall = Controller_get_wall(data->self->game->controller, i);
-        if (wall->length <= 1) continue;
+        const Wall *wall = Controller_get_wall(data->self->game->controller, i);
+        if (wall->length <= 1)
+            continue;
         const int x = VueNCURSES_estimate(wall->x, width, width_win);
         const int y = VueNCURSES_estimate(wall->y, height, height_win);
 
         switch (wall->direction)
         {
         case DIRECTION_UP:
-            mvwvline(data->win, y+1, x+1, '|', wall->length);
+            mvwvline(data->win, y + 1, x + 1, '|', wall->length);
             break;
         case DIRECTION_LEFT:
-            mvwhline(data->win, y+1, x+1, '-', wall->length);
+            mvwhline(data->win, y + 1, x + 1, '-', wall->length);
             break;
         case DIRECTION_DOWN:
-            mvwvline(data->win, y - wall->length+1, x+1, '|', wall->length);
+            mvwvline(data->win, y - wall->length + 1, x + 1, '|', wall->length);
             break;
         case DIRECTION_RIGHT:
-            mvwhline(data->win, y+1, x - wall->length+1, '-', wall->length);
+            mvwhline(data->win, y + 1, x - wall->length + 1, '-', wall->length);
             break;
-        default: ;
+        default:;
         }
     }
 
     // render the players
     for (int i = 0; i < player_count; i++)
     {
-        const Player* player = Controller_get_player(data->self->game->controller, i);
+        const Player *player = Controller_get_player(data->self->game->controller, i);
         const int x = VueNCURSES_estimate(player->x, width, width_win);
         const int y = VueNCURSES_estimate(player->y, height, height_win);
         int distance;
@@ -165,18 +164,18 @@ void VueNCURSES_draw_window(NCURSESData* data)
             switch (player->direction)
             {
             case DIRECTION_UP:
-                mvwvline(data->win, y+2, x+1, '|', distance);
+                mvwvline(data->win, y + 2, x + 1, '|', distance);
                 break;
             case DIRECTION_LEFT:
-                mvwhline(data->win, y+1, x+2, '-', distance);
+                mvwhline(data->win, y + 1, x + 2, '-', distance);
                 break;
             case DIRECTION_DOWN:
-                mvwvline(data->win, y - distance+1, x+1, '|', distance);
+                mvwvline(data->win, y - distance + 1, x + 1, '|', distance);
                 break;
             case DIRECTION_RIGHT:
-                mvwhline(data->win, y+1, x - distance+1, '-', distance);
+                mvwhline(data->win, y + 1, x - distance + 1, '-', distance);
                 break;
-            default: ;
+            default:;
             }
         }
 
@@ -187,14 +186,15 @@ void VueNCURSES_draw_window(NCURSESData* data)
                 mvwprintw(data->win, y + 1, x + 1, "X");
             else if (player->state == PLAYER_STATE_DEAD)
                 mvwprintw(data->win, y + 1, x + 1, "D");
-            else mvwprintw(data->win, y + 1, x + 1, "%d", i);
+            else
+                mvwprintw(data->win, y + 1, x + 1, "%d", i + 1);
         }
     }
 
     wrefresh(data->win);
 }
 
-void VueNCURSES_loop(NCURSESData* data)
+void VueNCURSES_loop(NCURSESData *data)
 {
     bool running = true;
     nodelay(stdscr, TRUE); // getch non-blocking
@@ -236,8 +236,7 @@ void VueNCURSES_loop(NCURSESData* data)
                 box(data->scoreboard, 0, 0);
                 wrefresh(data->scoreboard);
             }
-            else if (ch[0] == '+' && !playing && Controller_get_player_count(data->self->game->controller) <
-                MAX_PLAYERS)
+            else if (ch[0] == '+' && !playing && Controller_get_player_count(data->self->game->controller) < MAX_PLAYERS)
             {
                 // Add player event
                 Controller_new_player(data->self->game->controller);
@@ -280,7 +279,7 @@ void VueNCURSES_loop(NCURSESData* data)
                 Controller_move_player(data->self->game->controller, 0, DIRECTION_LEFT);
             else if (ch[0] == 67 && ch[1] == 91 && ch[2] == 27 && playing) // Move player 0 RIGHT
                 Controller_move_player(data->self->game->controller, 0, DIRECTION_RIGHT);
-                // zqsd for player 1
+            // zqsd for player 1
             else if (ch[0] == 'z' && playing) // Move player 1 UP
                 Controller_move_player(data->self->game->controller, 1, DIRECTION_UP);
             else if (ch[0] == 's' && playing) // Move player 1 DOWN
@@ -289,7 +288,7 @@ void VueNCURSES_loop(NCURSESData* data)
                 Controller_move_player(data->self->game->controller, 1, DIRECTION_LEFT);
             else if (ch[0] == 'd' && playing) // Move player 1 RIGHT
                 Controller_move_player(data->self->game->controller, 1, DIRECTION_RIGHT);
-                // ijkl for player 2
+            // ijkl for player 2
             else if (ch[0] == 'i' && playing) // Move player 2 UP
                 Controller_move_player(data->self->game->controller, 2, DIRECTION_UP);
             else if (ch[0] == 'k' && playing) // Move player 2 DOWN
@@ -298,7 +297,7 @@ void VueNCURSES_loop(NCURSESData* data)
                 Controller_move_player(data->self->game->controller, 2, DIRECTION_LEFT);
             else if (ch[0] == 'l' && playing) // Move player 2 RIGHT
                 Controller_move_player(data->self->game->controller, 2, DIRECTION_RIGHT);
-                // tfgh for player 3
+            // tfgh for player 3
             else if (ch[0] == 't' && playing) // Move player 3 UP
                 Controller_move_player(data->self->game->controller, 3, DIRECTION_UP);
             else if (ch[0] == 'g' && playing) // Move player 3 DOWN
@@ -307,7 +306,7 @@ void VueNCURSES_loop(NCURSESData* data)
                 Controller_move_player(data->self->game->controller, 3, DIRECTION_LEFT);
             else if (ch[0] == 'h' && playing) // Move player 3 RIGHT
                 Controller_move_player(data->self->game->controller, 3, DIRECTION_RIGHT);
-                // 5123 for player 4
+            // 5123 for player 4
             else if (ch[0] == '5' && playing) // Move player 4 UP
                 Controller_move_player(data->self->game->controller, 4, DIRECTION_UP);
             else if (ch[0] == '2' && playing) // Move player 4 DOWN
@@ -316,7 +315,7 @@ void VueNCURSES_loop(NCURSESData* data)
                 Controller_move_player(data->self->game->controller, 4, DIRECTION_LEFT);
             else if (ch[0] == '3' && playing) // Move player 4 RIGHT
                 Controller_move_player(data->self->game->controller, 4, DIRECTION_RIGHT);
-                // -789 for player 5
+            // -789 for player 5
             else if (ch[0] == '-' && playing) // Move player 5 UP
                 Controller_move_player(data->self->game->controller, 5, DIRECTION_UP);
             else if (ch[0] == '7' && playing) // Move player 5 DOWN
@@ -325,8 +324,7 @@ void VueNCURSES_loop(NCURSESData* data)
                 Controller_move_player(data->self->game->controller, 5, DIRECTION_LEFT);
             else if (ch[0] == '9' && playing) // Move player 5 RIGHT
                 Controller_move_player(data->self->game->controller, 5, DIRECTION_RIGHT);
-        }
-        while (ch[0] != ERR);
+        } while (ch[0] != ERR);
 
         GameState state = Controller_get_state(data->self->game->controller);
 
@@ -358,8 +356,9 @@ void VueNCURSES_loop(NCURSESData* data)
 
                 for (int i = 0; i < Controller_get_player_count(data->self->game->controller); i++)
                 {
-                    Player* player = Controller_get_player(data->self->game->controller, i);
-                    if (player->state != PLAYER_STATE_ALIVE) continue;
+                    Player *player = Controller_get_player(data->self->game->controller, i);
+                    if (player->state != PLAYER_STATE_ALIVE)
+                        continue;
                     sprintf(msg, "Winner is player %d with %d points!", i, player->score);
                     data->msg_text = msg;
                 }
@@ -395,7 +394,7 @@ void VueNCURSES_loop(NCURSESData* data)
     }
 }
 
-void VueNCURSES_destroy(NCURSESData* data)
+void VueNCURSES_destroy(NCURSESData *data)
 {
     // destroy the windows
     delwin(data->win);
@@ -406,12 +405,12 @@ void VueNCURSES_destroy(NCURSESData* data)
     endwin();
 }
 
-int VueNCURSES_main(Vue* self)
+int VueNCURSES_main(Vue *self)
 {
     debug_log("VueNCURSES_main");
 
     // initialize the time since the game started
-    time_t* tim = malloc(sizeof(time_t));
+    time_t *tim = malloc(sizeof(time_t));
     if (tim == NULL)
         return 1;
     *tim = time(NULL);
@@ -422,8 +421,7 @@ int VueNCURSES_main(Vue* self)
         NULL,
         self,
         "Press * to start the game",
-        tim
-    };
+        tim};
 
     VueNCURSES_init(&data);
     VueNCURSES_loop(&data);
