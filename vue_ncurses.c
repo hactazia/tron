@@ -129,6 +129,7 @@ void VueNCURSES_draw_window(NCURSESData* data)
     for (int i = 0; i < wall_count; i++)
     {
         const Wall* wall = Controller_get_wall(data->self->game->controller, i);
+        if (wall->length <= 1) continue;
         const int x = VueNCURSES_estimate(wall->x, width, width_win);
         const int y = VueNCURSES_estimate(wall->y, height, height_win);
 
@@ -179,12 +180,15 @@ void VueNCURSES_draw_window(NCURSESData* data)
             }
         }
 
-        // render the player
-        if (Controller_out_of_bounds(data->self->game->controller, player->x, player->y))
-            mvwprintw(data->win, y + 1, x + 1, "X");
-        else if (player->state == PLAYER_STATE_DEAD)
-            mvwprintw(data->win, y + 1, x + 1, "D");
-        else mvwprintw(data->win, y + 1, x + 1, "%d", i);
+        const GameState state = Controller_get_state(data->self->game->controller);
+        if (state & (GAME_STATE_PLAYING | GAME_STATE_GAME_OVER))
+        {
+            if (Controller_out_of_bounds(data->self->game->controller, player->x, player->y))
+                mvwprintw(data->win, y + 1, x + 1, "X");
+            else if (player->state == PLAYER_STATE_DEAD)
+                mvwprintw(data->win, y + 1, x + 1, "D");
+            else mvwprintw(data->win, y + 1, x + 1, "%d", i);
+        }
     }
 
     wrefresh(data->win);
