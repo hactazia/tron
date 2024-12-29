@@ -34,6 +34,7 @@ typedef struct Wall {
     int y;
     Direction direction;
     int length;
+    int player;
 } Wall;
 
 typedef int GameState;
@@ -53,10 +54,12 @@ typedef struct Model {
     // List of players
     Player *players;
     int num_players;
+    int allocated_players;
 
     // List of walls
     Wall *walls;
     int num_walls;
+    int allocated_walls;
 
     // Game state
     GameState state;
@@ -89,7 +92,7 @@ bool Model_add_player(Model *self, const int x, const int y, const int direction
  * @param length The length of the wall
  * @return True if the wall was added, false otherwise
  */
-bool Model_add_wall(Model *self, const int x, const int y, const int direction, const int length);
+bool Model_add_wall(Model *self, const int x, const int y, const int direction, const int length, const int player);
 
 /**
  * @brief Destroy the model
@@ -121,7 +124,7 @@ bool Model_hit_wall(const Wall* wall, const int x, const int y);
  * @param output The output wall
  * @return True if the point hit a wall, false otherwise
  */
-bool Model_try_hit_walls(const Model* model, const int x, const int y, Wall** output);
+bool Model_try_hit_walls(const Model* model, const int x, const int y, Wall* output);
 
 /**
  * @brief Check if the point hit a player
@@ -159,25 +162,25 @@ bool Model_out_of_bounds(const Model* model, const int x, const int y);
  * @param distance The distance to the wall
  * @return True if the raycast hit a wall, false otherwise
  */
-bool Model_try_hit_raycast(const Model* model, const int x, const int y, const int direction, Wall** output, int* distance);
+bool Model_try_hit_raycast(const Model* model, const int x, const int y, const int direction, Wall* output, int* distance);
 
 /**
  * @brief Change the direction of a player
  * @param model The model
- * @param player The player
+ * @param index The player index
  * @param direction The new direction
  * @return True if the direction was changed and add a wall, false otherwise
  * @note If the direction is the same as the current one, it will return true
  */
-bool Model_change_direction(Model* model, Player* player, const int direction);
+bool Model_change_direction(Model* model, const int index, const int direction);
 
 /**
  * @brief Move a player
  * @param model The model
- * @param player The player
+ * @param index The player index
  * @param speed Amount of movement
  */
-void Model_move_player(const Model* model, Player* player, const int speed);
+void Model_move_player(const Model* model, const int index, const int speed);
 
 /**
  * @brief Start the game
@@ -192,10 +195,39 @@ void Model_start(Model *self);
 void Model_cancel(Model *self);
 
 /**
+ * @brief End the game
+ * @param self The model
+ */
+void Model_game_over(Model *self);
+
+/**
  * @brief Calculate the player state
  * @param self The model
  * @param index The index of the player
  */
 void Model_calculate_player_state(Model *self, const int index);
+
+
+/**
+ * @brief Get the player wall
+ * @param self The model
+ * @param index The index of the player
+ * @param output The output wall
+ * @param distance The distance to the wall
+ */
+void Model_get_player_wall(const Model *self, const int index, Wall *output, int *distance);
+
+/**
+ * @brief Remove a player
+ * @param self The model
+ * @param index The index of the player
+ */
+void Model_remove_player(Model *self, const int index);
+
+/**
+ * @brief Reset the model
+ * @param self The model
+ */
+void Model_reset(Model *self);
 
 #endif // MODEL_H

@@ -1,5 +1,10 @@
 # Ignore build files
 cmake-build-*/
+build/
+
+# Clion files
+.idea/
+CMakeFiles/
 
 # Ignore OS generated files
 .DS_Store

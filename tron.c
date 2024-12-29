@@ -1,5 +1,6 @@
-#include <stdlib.h>
 #include "tron.h"
+
+#include <stdlib.h>
 
 Tron *create_tron(Model *model, Vue *vue, Controller *controller) {
     Tron *tron = malloc(sizeof(Tron));
